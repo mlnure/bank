@@ -1,0 +1,248 @@
+﻿@using OnlineBank.ViewModels
+
+
+@model HomePageViewModel
+@{
+	ViewData["Title"] = "Home";
+	string tranColor = "negative";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - OnlineBank</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f8f9fa;
+			color: #333;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			height: 100vh;
+		}
+
+		.container {
+			text-align: center;
+		}
+
+		.balance {
+			font-size: 5rem;
+			font-weight: bold;
+			color: #333;
+			margin: 5rem 0;
+		}
+
+        .btns {
+            display: flex;
+            justify-content: center;
+        }
+
+		.btn-custom {
+			position: relative; /* Добавляем позиционирование */
+			background-color: transparent;
+			color: #333;
+			border: 2px solid #333;
+			border-radius: 20px;
+			padding: 10px 20px;
+			cursor: pointer;
+			transition: background-color 0.3s ease, color 0.3s ease;
+			margin-right: 10px;
+		}
+
+			/* Стили для рисованной линии */
+			.btn-custom::after {
+				content: "";
+				position: absolute;
+				top: 80%;
+				right: 20px;
+				transform: translateY(-50%);
+				width: 75%;
+				height: 2px;
+				background-color: transparent;
+				border-radius: 2px;
+				transition: background-color 0.3s ease;
+			}
+
+			.btn-custom:hover {
+				background-color: #333;
+				color: #fff;
+			}
+
+		/* Стили для маркера */
+		.btn-recharge::after {
+			background-color: #6c5ce7; /* Фиолетовый цвет */
+		}
+
+		.btn-statistics::after {
+			background-color: #fd7e14; /* Оранжевый цвет */
+		}
+
+		.btn-transaction::after {
+			background-color: #20c997; /* Зеленый цвет */
+		}
+
+		.btn-custom:hover::after {
+			background-color: #333; /* Цвет маркера при наведении */
+		}
+
+
+		.transactions {
+			margin-top: 3.5rem;
+		}
+
+		.transaction-item {
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			margin-bottom: 2rem;
+			text-align: left;
+		}
+
+			.transaction-item:last-child {
+				margin-bottom: 0;
+			}
+
+		.transaction-tag {
+			position: relative;
+			bottom: 100px;
+			left: 91.5%;
+			width: 10%;
+			background-color: #333;
+			color: #fff;
+			padding: 5px 10px;
+			border-top-right-radius: 10px;
+			border-bottom-left-radius: 10px;
+		}
+
+		.transaction-amount {
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 5px;
+		}
+
+		.transaction-date {
+			font-size: 14px;
+			color: #999;
+		}
+
+		.transaction-info {
+			font-size: 16px;
+			color: #666; /* Цвет для текста информации */
+			margin-top: 5px; /* Отступ сверху */
+		}
+
+			.transaction-info span {
+				font-weight: bold; /* Жирный шрифт для имени получателя или отправителя */
+				color: #333; /* Цвет для имени */
+			}
+
+		/* Стили для отрицательных транзакций */
+		.transaction-item.negative {
+			border-left: 5px solid #dc3545; /* Красный цвет */
+		}
+
+		/* Стили для положительных транзакций */
+		.transaction-item.positive {
+			border-left: 5px solid #28a745; /* Зеленый цвет */
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="balance">
+			@Model.Bal.Amount &#8372;
+		</div>
+
+		<a asp-controller="Card" asp-action="Recharge" class="btn btn-custom btn-recharge">Recharge Card</a>
+		<a asp-controller="Card" asp-action="Statistics" class="btn btn-custom btn-statistics">Check Statistics</a>
+		<a asp-controller="Transaction" asp-action="Create" class="btn btn-custom btn-transaction">Make Transaction</a>
+
+		<div class="transactions">
+			@foreach (var item in Model.Transactions)
+			{
+				@if (item.IsIncome)
+				{
+					tranColor = "positive";
+					}
+					else
+					{
+						tranColor = "negative";
+					}
+
+				<div class="transaction-item @tranColor">
+					<div class="transaction-amount">&#8372 @item.Amount </div>
+					<div class="transaction-date">@item.Date.ToString("HH:mm, dd MMMM, yyyy", new System.Globalization.CultureInfo("uk-UA"));</div>
+					<div class="transaction-info ">
+						@if (item.IsIncome)
+						{
+							<p class="d-inline">from: @item.Sender</p>
+						}
+						else
+						{
+							<p class="d-inline">to: @item.Recipient</p>
+						}
+
+					</div>
+					<div class="transaction-tag" >@item.Tag.Name</div>
+				</div>
+
+
+				<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+
+							<div class="modal-body">
+								<!-- Ваш селект и другие элементы формы -->
+								<form method="post" asp-action="ChangeTag" id="tagForm" asp-route-id="@item.Id">
+									<select asp-for="TagId" asp-items="ViewBag.Tags"  class="btn btn-custom form-select select-tag" id="TagId"></select>
+								</form>
+							</div>
+							<div class="modal-footer btns">
+								<button type="button" class="btn btn-custom" data-bs-dismiss="modal">Close</button>
+								<button form="tagForm" type="submit" class="btn btn-custom" id="saveButton">Save</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			}
+
+
+
+
+		</div>
+
+		<!-- Модальное окно -->
+		
+	</div>
+
+	<!-- Скрипт для открытия модального окна при клике на тег -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var transactionTags = document.querySelectorAll('.transaction-tag');
+
+			transactionTags.forEach(function (tag) {
+
+				tag.addEventListener('click', function () {
+					$('#myModal').modal('show'); // Открываем модальное окно
+				});
+			});
+
+			// Обработчик нажатия кнопки "Save"
+			var saveButton = document.getElementById('saveButton');
+			saveButton.addEventListener('click', function () {
+				// Отправка формы или другая логика сохранения выбранного тега
+				// Закрываем модальное окно
+				$('#myModal').modal('hide');
+			});
+		});</script>
+
+</body>
+</html>

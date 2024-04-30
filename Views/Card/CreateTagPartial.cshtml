@@ -1,0 +1,17 @@
+﻿@model TagModel
+@{
+}
+
+<form method="post" asp-controller="Tag" asp-action="Create">
+    <div class="input-group mb-5" style="margin-top:3rem">
+        <span class="input-group-text">Tag</span>
+        <input asp-for="Name" type="text" class="form-control" placeholder="Enter tag name" required>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <button type="button" class="btn btn-custom w-25 btn-back" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-custom w-25 btn-active">Save</button>
+    </div>
+
+
+</form>

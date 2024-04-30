@@ -1,0 +1,171 @@
+﻿@model TransactionModel
+@{
+    ViewData["Title"] = "Recharge";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OnlineBank</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #333;
+            margin: 5rem 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btns {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .input-group-text {
+            background-color: #333;
+            border: none;
+            border-right: none;
+            border-radius: 20px 0 0 20px;
+            color: white;
+        }
+
+        .form-control {
+            border-radius: 0 20px 20px 0;
+            flex: none !important;
+            width: 14vw !important;
+        }
+
+        .btn-custom {
+            position: relative; /* Добавляем позиционирование */
+            background-color: transparent;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-right: 10px;
+        }
+
+            .btn-custom:hover {
+                background-color: #333;
+                color: #fff;
+            }
+
+            /* Стили для рисованной линии */
+            .btn-custom::after {
+                content: "";
+                position: absolute;
+                top: 80%;
+                right: 10px;
+                transform: translateY(-50%);
+                width: 70%;
+                height: 2px;
+                background-color: transparent;
+                border-radius: 2px;
+                transition: background-color 0.3s ease;
+            }
+        .btn-active::after {
+                width:75%;
+            }
+
+        /* Стили для маркера */
+        .btn-back::after {
+            background-color: #6c5ce7; /* Фиолетовый цвет */
+        }
+
+        .btn-active::after {
+            background-color: #fd7e14; /* Оранжевый цвет */
+        }
+
+        .btn-custom:hover::after {
+            background-color: #333; /* Цвет маркера при наведении */
+        }
+
+        .select-tag {
+            width:10vw !important;
+            flex:none !important;
+            padding-left:0px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="balance">
+            @ViewBag.Bal &#8372;
+        </div>
+        <form asp-action="Recharge" method="post">
+            <div class="input-group mb-5">
+                <span class="input-group-text">Amount</span>
+                <input asp-for="Amount" id="Amount" value="0.00" step="0.01" type="number" min="0" class="form-control" placeholder="Enter amount to transfer" aria-label="Enter amount to transfer" aria-describedby="basic-addon2" required>
+
+                <select asp-for="TagId" asp-items="ViewBag.Tags" class="btn btn-custom form-select select-tag" id="TagId">
+                </select>
+            </div>
+
+            <div class="row-cols-4 btns">
+                <div class="col">
+                    <a asp-action="Back" class="btn btn-custom btn-back">Back</a>
+                    <button class="btn btn-custom btn-active" id="rechargeButton">Recharge</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Please enter a valid amount.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom w-100" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>document.addEventListener('DOMContentLoaded', function () {
+            var rechargeButton = document.querySelector('#rechargeButton');
+            var amountInput = document.querySelector('#Amount');
+            var modal = new bootstrap.Modal(document.getElementById('myModal'));
+
+            rechargeButton.addEventListener('click', function (event) {
+                if (amountInput.value === '' || parseFloat(amountInput.value) <= 0) {
+                    event.preventDefault(); // Предотвращаем отправку формы
+                    modal.show(); // Отображаем модальное окно
+                }
+            });
+        });</script>
+
+</body>
+</html>

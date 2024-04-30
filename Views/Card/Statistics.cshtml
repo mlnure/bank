@@ -1,0 +1,189 @@
+﻿@model List<TagModel>
+@{
+	ViewData["Title"] = "Tags";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - OnlineBank</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f8f9fa;
+			color: #333;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			height: 100vh;
+		}
+
+		.container {
+			text-align: center;
+		}
+
+		.title {
+			font-size: 3rem;
+			font-weight: bold;
+			color: #333;
+			margin: 4rem 0;
+		}
+
+		.tag-card {
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			margin-bottom: 20px;
+			position: relative;
+			text-align: left;
+		}
+
+		.tag-name {
+			font-size: 20px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
+
+		.tag-amount {
+			font-size: 16px;
+			color: #28a745; /* Зеленый цвет */
+			margin-bottom: 5px;
+		}
+
+		.tag-expense {
+			font-size: 16px;
+			color: #dc3545; /* Красный цвет */
+			margin-bottom: 5px;
+		}
+
+		.delete-tag {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			font-size: 18px;
+			color: #f00;
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+        .btn-custom {
+            position: relative; /* Добавляем позиционирование */
+            background-color: transparent;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-right: 10px;
+        }
+
+            .btn-custom:hover {
+                background-color: #333;
+                color: #fff;
+            }
+
+            /* Стили для рисованной линии */
+            .btn-custom::after {
+                content: "";
+                position: absolute;
+                top: 80%;
+                right: 10px;
+                transform: translateY(-50%);
+                width: 70%;
+                height: 2px;
+                background-color: transparent;
+                border-radius: 2px;
+                transition: background-color 0.3s ease;
+            }
+
+        .btn-active::after {
+            width: 75%;
+        }
+
+        /* Стили для маркера */
+        .btn-back::after {
+            background-color: #6c5ce7; /* Фиолетовый цвет */
+        }
+
+        .btn-active::after {
+            background-color: #fd7e14; /* Оранжевый цвет */
+        }
+
+        .btn-custom:hover::after {
+            background-color: #333; /* Цвет маркера при наведении */
+        }
+
+		.input-group {
+			margin-bottom: 20px;
+			display: flex;
+			justify-content: center;
+		}
+
+		.input-group-text {
+			background-color: #333;
+			border: none;
+			border-right: none;
+			border-radius: 20px 0 0 20px;
+			color: white;
+		}
+
+		.form-control {
+			border-radius: 0 20px 20px 0;
+			flex: none !important;
+			width: 16vw !important;
+		}
+
+        .btns {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+	</style>
+</head>
+<body>
+    <div class="container">
+
+        <h1 class="title">Tags</h1>
+
+        <!-- Tag Cards -->
+        @foreach (var tag in Model)
+        {
+            <div class="tag-card">
+                <a asp-action="DeleteTag" asp-route-id="@tag.Id" class="delete-tag">&times;</a>
+                <div class="tag-name">@tag.Name</div>
+                <div class="tag-amount">+&#8372 @tag.Income</div>
+                <div class="tag-expense">-&#8372 @tag.Outcome</div>
+            </div>
+        }
+
+
+        <!-- Add Tag Button -->
+        <div class="row-cols-4 btns">
+            <div class="col">
+                <a asp-action="Back" class="btn btn-custom btn-back">Back</a>
+                <button class="btn btn-custom btn-active" data-bs-toggle="modal" data-bs-target="#addTagModal">Add Tag</button>
+            </div>
+        </div>
+
+        <!-- Add Tag Modal -->
+        <div class="modal fade" id="addTagModal" tabindex="-1" aria-labelledby="addTagModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        @await Html.PartialAsync("CreateTagPartial", new TagModel())
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
